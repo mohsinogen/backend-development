@@ -1,5 +1,4 @@
-const fs = require("fs");
-
+import fs from "fs";
 // Function to read JSON data from file
 function read() {
   try {

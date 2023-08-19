@@ -1,28 +1,25 @@
-// Importing packages
-import express, { json } from "express";
-import cors from "cors"
-import dotenv from "dotenv"
-import connectDB from "./config/db.js";
-import colors from "colors";
-
-// importing routes
+import express from "express"
+import { home } from "./controllers/homeController.js";
 import userRoutes from "./routes/userRoutes.js"
+import morgan from "morgan";
+import colors from "colors"
+import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
 
-dotenv.config();
+dotenv.config()
+
 connectDB();
 
+
 const app = express();
+app.use(express.json())
+app.use(morgan('dev'))
 
-app.use(json())
-app.use(cors());
+app.get('/',home);
 
-app.get('/',(req,res)=>{
-  res.json({code:200, remark:'success',data:null})
-})
+app.use("/users", userRoutes)
 
-app.use('/users', userRoutes)
-
-const PORT = process.env.PORT || nul
+const PORT = process.env.PORT
 app.listen(PORT,()=>{
-  console.log(`Server is runnig on http://localhost:${PORT}`.yellow.underline);
-})
+  console.log(`Server is running on port ${PORT}`.yellow.underline);
+});

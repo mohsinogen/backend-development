@@ -1,95 +1,109 @@
+// Importing modules
 import url from "url";
-import { read, write } from "../helper.js";
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 
 const getUsers = asyncHandler(async (req, res) => {
-  try {
-    const users = await User.find(
-      req.query.name
-        ? {
-            name: {
-              $regex: req.query.name,
-              $options: "i",
-            },
-          }
-        : {}
+  const storedData = await User.find();
+
+  if (req.query.name) {
+    const result = storedData.filter((item) =>
+      item.name
+        .toLocaleLowerCase()
+        .includes(parsedUrl.query.name.toLocaleLowerCase())
     );
-    res.status(200).json({ code: 200, remark: "success", data: users });
-  } catch (error) {
-    res.status(500).json({ code: 500, remark: "fail", error: error });
+    res.json(result);
+  } else {
+    res.json(storedData);
   }
 });
+const createUser = (req, res) => {
+  const { name, email } = req.body;
 
-const createUser = asyncHandler(async (req, res) => {
+  if (name && email) {
+    const storedData = read();
+
+    const newUserID =
+      storedData.length > 0 ? storedData[storedData.length - 1]["id"] + 1 : 1;
+    const updatedData = [...storedData, { id: newUserID, name, email }];
+    write(updatedData);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        code: 200,
+        remark: "User added successfully",
+        data: null,
+      })
+    );
+  } else {
+    res.status(400);
+    res.json({
+      code: 400,
+      remark: "bad request",
+    });
+  }
+};
+
+const updateUser = (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { id, name, email } = req.body;
 
-    if (name && email) {
-      const user = new User({
+    if (id && name && email) {
+      const storedData = read();
+
+      // searching and editing the particular user
+      const userToEditIndex = storedData.findIndex((item) => item.id === id);
+      storedData[userToEditIndex] = {
+        ...storedData[userToEditIndex],
         name,
         email,
+      };
+
+      write(storedData);
+      res.json({
+        code: 200,
+        remark: "User updated successfully",
+        data: null,
       });
-
-      await user.save();
-
-      res.status(200).json({ code: 200, remark: "user created" });
     } else {
-      res.status(404).json({ code: 404, remark: "please send valid data" });
+      res.status(400);
+      res.json({
+        code: 400,
+        remark: "bad request",
+      });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ code: 500, remark: "fail", error: error });
+    res.status(500);
+    res.json({
+      code: 500,
+    });
   }
-});
+};
 
-const updateUser = asyncHandler(async (req, res) => {
-  try {
-    const { name, email, id } = req.body;
+const deleteUser = (req, res) => {
+  const storedData = read();
 
-    if (!id) {
-      res.status(404).json({ code: 404, remark: "please send user id" });
-      return;
-    }
+  const userToDeleteIndex = storedData.findIndex(
+    (item) => item.id === Number(req.query.id)
+  );
 
-    const user = await User.findById(id);
+  if (userToDeleteIndex != -1) {
+    storedData.splice(userToDeleteIndex, 1);
+    write(storedData);
 
-    if (!user) {
-      res.status(404).json({ code: 404, remark: "user does not exist" });
-      return;
-    }
-
-    user.name = name || user.name;
-    user.email = email || user.email;
-
-    await user.save();
-
-    res.status(200).json({ code: 200, remark: "user updated" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ code: 500, remark: "fail", error: error });
+    res.json({
+      code: 200,
+      remark: "User deleted successfully",
+      data: null,
+    });
+  } else {
+    res.json({
+      code: 400,
+      remark: "User not found",
+      data: null,
+    });
   }
-});
-
-const deleteUser = asyncHandler(async(req,res)=>{
-  try {
-    if(req.query.id){
-      const user = await User.deleteOne({_id:req.query.id});
-      
-      if(user.deletedCount==0){
-        res.status(404).json({ code: 404, remark: "user does not exist" });
-        return;
-      }
-
-      res.status(200).json({ code: 200, remark: "user deleted" });
-
-    } else{
-      res.status(404).json({ code: 404, remark: "please send user id" });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ code: 500, remark: "fail", error });
-  }
-})
+};
 
 export { getUsers, createUser, updateUser, deleteUser };

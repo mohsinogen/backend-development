@@ -1,9 +1,12 @@
-const home = (req, res) => {
-  res.status(200);
-  res.json({
-    code:200,
-    remark: 'success'
-  })
-};
+const home=(req,res)=>{
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        code: 200,
+        remark: "success",
+        data: null,
+      })
+    );
+}
 
-export { home }
+export default {home};

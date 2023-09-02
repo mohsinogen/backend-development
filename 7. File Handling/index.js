@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/file', fileRoutes)
-
+app.use('/files',express.static('uploads'))
 // Middlewares
 app.use(notFound);
 app.use(errorHandler);

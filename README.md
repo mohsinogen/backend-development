@@ -33,3 +33,16 @@ npm install
 ```
 npm start
 ```
+
+### Packages
+
+#### express - web framework
+#### cors - to enable CORS with various options
+#### dotenv - to read env variables from .env file
+#### express-async-handler - to handle async function inside express
+#### morgan - to maintain logs of http requests
+#### colors - to print console.log in color
+#### multer - to handle files
+#### jsonwebtoken - to sign and verify JWT token
+#### mongoose - to connect with MongoDB database
+

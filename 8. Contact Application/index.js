@@ -9,6 +9,8 @@ import connectDB from "./config/db.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 // importing routes
 import userRoutes from "./routes/userRoutes.js"
+import contactRoutes from "./routes/contactRoutes.js"
+import fileRoutes from "./routes/fileRoutes.js"
 
 dotenv.config();
 connectDB();
@@ -28,6 +30,13 @@ app.get("/", (req, res) => {
 
 // routings
 app.use("/api/users", userRoutes)
+app.use("/api/contacts", contactRoutes)
+app.use("/file", fileRoutes);
+
+
+// static files
+app.use("/images", express.static("uploads"))
+app.use("/qrcode", express.static("qrcodes"))
 
 // Middlewares
 app.use(notFound);

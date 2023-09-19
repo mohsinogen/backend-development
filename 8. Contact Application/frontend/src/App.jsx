@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoutes";
 import NewContactPage from "./pages/NewContactPage";
 import ProfilePage from "./pages/ProfilePage";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/contacts/:contactId" element={<ContactPage />} />
             <Route path="/newcontact" element={<ProtectedRoute element={<NewContactPage />} />} />
             <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
           </Routes>

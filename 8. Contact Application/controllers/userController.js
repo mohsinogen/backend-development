@@ -1,7 +1,6 @@
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/helper.js";
-import jwt from "jsonwebtoken";
 
 /**
  * This method takes three values in request body
